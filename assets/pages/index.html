@@ -1,0 +1,12 @@
+<script>
+  export default {
+    methods: {
+      acak() {
+        return crypto.randomUUID();
+      },
+    },
+  };
+</script>
+
+<h1>Nulis</h1>
+<p><a :href="'#/form/' + acak()">Tulisan Baru</a></p>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+  <html lang="id" data-theme="light">
+  
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Future Web</title>
+  </head>
+  
+  <body>
+      <script src="./lib/vue.js"></script>
+      <script src="./lib/vue-router.js"></script>
+      <script src="./lib/alasql.js"></script>
+      <script src="./lib/swal.js"></script>
+      <script src="./lib/db.js"></script>
+      <script>
+      function toast(teks) {
+        const Toast = Swal.mixin({
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.addEventListener("mouseenter", Swal.stopTimer);
+            toast.addEventListener("mouseleave", Swal.resumeTimer);
+          },
+        });
+
+        Toast.fire({
+          icon: "success",
+          title: teks,
+        });
+      }
+    </script>
+      <link rel="stylesheet" href="./lib/pico.css">
+
+      <style>
+        body {
+            padding: 20px;
+        }
+      </style>
+
+      <script>
+        let routes = [];
+      </script>
+  
+      <div id="app">
+          <router-view></router-view>
+      </div>
+  
+      <html-vue><template id="v-708e0bc1">
+    
+
+
+
+<table>
+    <tbody>
+        <tr>
+            <td>
+                <ol>
+
+                    <li v-for="x in table.sort()">
+                        <a href="" @click.prevent="pilihTable(x)">
+
+                            {{ x }}
+                        </a>
+                    </li>
+                </ol>
+            </td>
+            <td class="table-tengah">
+                <h1>{{ terpilihJudul }}</h1>
+                <table v-if="terpilihIsi.length > 0">
+                    <thead>
+                        <tr>
+                            <th v-for="(x, n) in terpilihIsi[0]">
+                                {{ n }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="x in terpilihIsi">
+                            <td v-for="n in x">{{ n }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+            <td>
+                <h2>Query</h2>
+                <form action="" @submit.prevent="jalankanQuery">
+                    <textarea name="" v-model="query" id="" cols="30" rows="10"></textarea>
+                    <input type="submit" value="Olahin">
+                </form>
+                <table v-if="queryIsi.length > 0">
+                    <thead>
+                        <tr>
+                            <th v-for="(x, n) in queryIsi[0]">{{ n }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="x in queryIsi">
+                            <td v-for="n in x">{{ n }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </tbody>
+</table>
+    </template><style>
+    li {
+        margin-bottom: 10px;
+    }
+
+    td,
+    th {
+        border: 1px solid black;
+        padding: 10px;
+        vertical-align: top;
+    }
+
+    table {
+        border-collapse: collapse;
+    }
+
+    input,
+    textarea {
+        display: block;
+        margin-bottom: 10px;
+    }
+    .table-tengah {
+        display: inline-block;
+        overflow: auto;
+        width: 50vw;
+    }
+</style><script>
+routes.push({
+    path: '/database',
+    component: {
+        template: '#v-708e0bc1',
+        
+        data() {
+            return {
+                table: [],
+                terpilihJudul: '',
+                terpilihIsi: [],
+                queryIsi: [],
+                query: ''
+            };
+        },
+        mounted() {
+            this.table = Object.keys(alasql.tables);
+            this.pilihTable(this.table.sort()[0]);
+        },
+        methods: {
+            pilihTable(table) {
+                this.terpilihJudul = table;
+                this.terpilihIsi = alasql('select * from ' + table);
+            },
+            jalankanQuery() {
+                this.queryIsi = alasql(this.query);
+            }
+        }
+    
+    }
+});
+</script><template id="v-d2c95c70">
+
+<h1>Nulis</h1>
+<p><a :href="'#/form/' + acak()">Tulisan Baru</a></p>
+</template><script>
+routes.push({
+    path: '/',
+    component: {
+        template: '#v-d2c95c70',
+        
+    methods: {
+      acak() {
+        return crypto.randomUUID();
+      },
+    },
+  
+    }
+});
+</script><template id="v-28e065cc">
+
+<form @submit.prevent="simpan" action="">
+  <label for="">Judul</label
+  ><input required v-model="judul" type="text" /><label for="">Isi</label
+  ><textarea name="" v-model="isi" id="" cols="30" rows="10"></textarea>
+  <input type="submit" value="Simpan" />
+</form>
+</template><script>
+routes.push({
+    path: '/form/:slug',
+    component: {
+        template: '#v-28e065cc',
+        
+    data() {
+      return {
+        judul: "",
+        isi: "",
+      };
+    },
+    methods: {
+      ambilData() {
+        let data = alasql("select * from nulis where slug = ?", [
+          this.$route.params.slug,
+        ]);
+        if (data.length > 0) {
+          this.judul = data[0].judul;
+          this.isi = data[0].isi;
+        }
+      },
+      simpan() {
+        let cek = alasql(
+          "select count(*) as banyak from nulis where slug = ?",
+          [this.$route.params.slug]
+        );
+        if (cek[0].banyak > 0) {
+          // update
+        } else {
+          // insert
+        }
+        toast("Tulisan disimpan");
+      },
+    },
+    mounted() {
+      this.ambilData();
+    },
+  
+    }
+});
+</script></html-vue>
+  
+      <script>
+  
+  
+          const router = VueRouter.createRouter({
+              history: VueRouter.createWebHashHistory(),
+              routes,
+          });
+  
+          const app = Vue.createApp({});
+          app.use(router);
+          app.mount('#app');
+  
+      </script>
+  </body>
+  
+  </html>

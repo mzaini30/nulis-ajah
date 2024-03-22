@@ -1,0 +1,43 @@
+<script>
+  export default {
+    data() {
+      return {
+        judul: "",
+        isi: "",
+      };
+    },
+    methods: {
+      ambilData() {
+        let data = alasql("select * from nulis where slug = ?", [
+          this.$route.params.slug,
+        ]);
+        if (data.length > 0) {
+          this.judul = data[0].judul;
+          this.isi = data[0].isi;
+        }
+      },
+      simpan() {
+        let cek = alasql(
+          "select count(*) as banyak from nulis where slug = ?",
+          [this.$route.params.slug]
+        );
+        if (cek[0].banyak > 0) {
+          // update
+        } else {
+          // insert
+        }
+        toast("Tulisan disimpan");
+      },
+    },
+    mounted() {
+      this.ambilData();
+    },
+  };
+</script>
+
+<form @submit.prevent="simpan" action="">
+  <label for="">Judul</label
+  ><input required v-model="judul" type="text" /><label for="">Isi</label
+  ><textarea name="" v-model="isi" id="" cols="30" rows="10"></textarea>
+  <input type="submit" value="Simpan" />
+</form>
