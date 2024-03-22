@@ -23,10 +23,21 @@
         );
         if (cek[0].banyak > 0) {
           // update
+          alasql("update nulis set judul = ?, isi = ? where slug = ?", [
+            this.judul,
+            this.isi,
+            this.$route.params.slug,
+          ]);
+          toast("Tulisan diupdate");
         } else {
           // insert
+          alasql("insert into nulis (slug, judul, isi) values (?,?,?)", [
+            this.$route.params.slug,
+            this.judul,
+            this.isi,
+          ]);
+          toast("Tulisan ditambahkan");
         }
-        toast("Tulisan disimpan");
       },
     },
     mounted() {

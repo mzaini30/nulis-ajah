@@ -5,8 +5,21 @@
         return crypto.randomUUID();
       },
     },
+    data() {
+      return {
+        data: [],
+      };
+    },
+    mounted() {
+      this.data = alasql("select * from nulis order by judul");
+    },
   };
 </script>
 
 <h1>Nulis</h1>
 <p><a :href="'#/form/' + acak()">Tulisan Baru</a></p>
+<ol>
+  <li v-for="x in data" :key="x.id">
+    <a :href="`#/form/${x.slug}`">{{ x.judul }}</a>
+  </li>
+</ol>

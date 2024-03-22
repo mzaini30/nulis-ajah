@@ -49,7 +49,7 @@
           <router-view></router-view>
       </div>
   
-      <html-vue><template id="v-708e0bc1">
+      <html-vue><template id="v-3f1969c9">
     
 
 
@@ -137,7 +137,7 @@
 routes.push({
     path: '/database',
     component: {
-        template: '#v-708e0bc1',
+        template: '#v-3f1969c9',
         
         data() {
             return {
@@ -164,25 +164,7 @@ routes.push({
     
     }
 });
-</script><template id="v-d2c95c70">
-
-<h1>Nulis</h1>
-<p><a :href="'#/form/' + acak()">Tulisan Baru</a></p>
-</template><script>
-routes.push({
-    path: '/',
-    component: {
-        template: '#v-d2c95c70',
-        
-    methods: {
-      acak() {
-        return crypto.randomUUID();
-      },
-    },
-  
-    }
-});
-</script><template id="v-28e065cc">
+</script><template id="v-df2981b6">
 
 <form @submit.prevent="simpan" action="">
   <label for="">Judul</label
@@ -194,7 +176,7 @@ routes.push({
 routes.push({
     path: '/form/:slug',
     component: {
-        template: '#v-28e065cc',
+        template: '#v-df2981b6',
         
     data() {
       return {
@@ -219,14 +201,56 @@ routes.push({
         );
         if (cek[0].banyak > 0) {
           // update
+          alasql("update nulis set judul = ?, isi = ? where slug = ?", [
+            this.judul,
+            this.isi,
+            this.$route.params.slug,
+          ]);
+          toast("Tulisan diupdate");
         } else {
           // insert
+          alasql("insert into nulis (slug, judul, isi) values (?,?,?)", [
+            this.$route.params.slug,
+            this.judul,
+            this.isi,
+          ]);
+          toast("Tulisan ditambahkan");
         }
-        toast("Tulisan disimpan");
       },
     },
     mounted() {
       this.ambilData();
+    },
+  
+    }
+});
+</script><template id="v-c21955c8">
+
+<h1>Nulis</h1>
+<p><a :href="'#/form/' + acak()">Tulisan Baru</a></p>
+<ol>
+  <li v-for="x in data" :key="x.id">
+    <a :href="`#/form/${x.slug}`">{{ x.judul }}</a>
+  </li>
+</ol>
+</template><script>
+routes.push({
+    path: '/',
+    component: {
+        template: '#v-c21955c8',
+        
+    methods: {
+      acak() {
+        return crypto.randomUUID();
+      },
+    },
+    data() {
+      return {
+        data: [],
+      };
+    },
+    mounted() {
+      this.data = alasql("select * from nulis order by judul");
     },
   
     }
